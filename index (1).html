@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Index</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --accent: #38bdf8;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --danger: #f97316;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0%, #020617 60%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+    h1 { text-align: center; margin-bottom: 1rem; letter-spacing: .02em; }
+    .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.6fr; gap: 1.5rem; }
+    .card { background: rgba(2, 6, 23, 0.45); border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 1rem; padding: 1rem 1.25rem 1.25rem; backdrop-filter: blur(10px); }
+    label { font-size: .75rem; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); display: block; margin-bottom: .25rem; }
+    input, textarea, select { width: 100%; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: .5rem; padding: .45rem .6rem .5rem; color: var(--text); outline: none; font-size: .9rem; }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; margin-bottom: .65rem; }
+    .team-box { border: 1px solid rgba(148, 163, 184, 0.2); border-radius: .75rem; padding: .5rem .6rem .65rem; background: rgba(15, 23, 42, 0.3); }
+    .team-title { font-weight: 600; margin-bottom: .35rem; }
+    button { background: var(--accent); border: none; border-radius: .5rem; padding: .55rem .8rem; color: #0f172a; font-weight: 600; cursor: pointer; }
+    button.secondary { background: rgba(148, 163, 184, 0.07); color: var(--text); }
+    button.danger { background: rgba(249, 115, 22, 0.15); color: #fff; border: 1px solid rgba(249, 115, 22, 0.5); }
+    button.ghost { background: transparent; border: 1px dashed rgba(148,163,184,.3); color: var(--text); }
+    table { width: 100%; border-collapse: collapse; margin-top: .5rem; font-size: .82rem; }
+    th, td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: .45rem .35rem .55rem; text-align: left; vertical-align: top; }
+    th { font-size: .7rem; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); }
+    .score-badge { display: inline-block; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); padding: .15rem .4rem; border-radius: .35rem; font-weight: 700; font-size: .7rem; }
+    .winner { color: #facc15; font-weight: 700; font-size: .7rem; display: inline-block; margin-right: .4rem; }
+    .topbar { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: space-between; align-items: center; margin-bottom: .5rem; }
+    .empty { text-align: center; color: var(--muted); padding: 1rem 0 .3rem; font-size: .85rem; }
+    .badges { display: inline-flex; gap: .35rem; align-items: center; }
+    .badge { font-size: .68rem; padding: .15rem .45rem; border-radius: .5rem; border: 1px solid rgba(148,163,184,.25); color: var(--muted); }
+    .badge.legacy { border-color: rgba(250, 204, 21, .45); color: #fde68a; }
+    .controls { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+    .tabs { display: inline-flex; background: rgba(148,163,184,.1); border: 1px solid rgba(148,163,184,.2); padding: .2rem; border-radius: .6rem; }
+    .tab { padding: .35rem .6rem; cursor: pointer; border-radius: .4rem; font-size: .8rem; color: var(--muted); }
+    .tab.active { background: rgba(56,189,248,.2); color: #dbeafe; border: 1px solid rgba(56,189,248,.3); }
+    .actions { display: flex; gap: .35rem; }
+    .subtle { color: var(--muted); font-size: .8rem; }
+    .section { margin-top: 1rem; }
+    .importer textarea { width: 100%; min-height: 8rem; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .stat-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .5rem; }
+    .stat { background: rgba(15,23,42,.35); border: 1px solid rgba(148,163,184,.15); border-radius: .75rem; padding: .6rem; }
+    .stat .label { color: var(--muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .03em; }
+    .stat .value { font-size: 1.1rem; font-weight: 700; }
+
+    /* Legacy summary strip */
+    .legacy-summary {
+      display: none;
+      margin: .5rem 0 .25rem;
+      padding: .6rem .75rem;
+      background: rgba(250, 204, 21, .08);
+      border: 1px solid rgba(250, 204, 21, .25);
+      border-radius: .6rem;
+      gap: 1rem;
+      align-items: center;
+    }
+    .legacy-summary .pill {
+      display: inline-flex; gap: .35rem; align-items: baseline;
+      padding: .2rem .5rem; border-radius: .5rem; border: 1px solid rgba(148,163,184,.25);
+    }
+    .legacy-summary .val { font-weight: 800; font-size: 1rem; }
+    .legacy-summary .lab { color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .03em; }
+
+    /* Auto Leaderboard */
+    .leaderboard {
+      border: 1px dashed rgba(148,163,184,.25);
+      border-radius: .75rem;
+      padding: .75rem;
+      margin: .5rem 0 0;
+      background: rgba(2,6,23,.25);
+    }
+    .lb-controls { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; margin:.35rem 0 .5rem; }
+    .lb-subtle { font-size: .75rem; color: var(--muted); }
+    .lb-sort { cursor: pointer; text-decoration: underline; }
+    .lb-row { display: grid; grid-template-columns: 1.2fr .6fr .6fr .6fr .6fr; gap: .5rem; align-items: center; padding: .25rem 0; }
+    .lb-row + .lb-row { border-top: 1px solid rgba(148,163,184,.12); }
+    @media (max-width: 1080px) { .container { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <h1>Cornhole Match Tracker 🟦🟧</h1>
+  <div class="container">
+    <!-- Entry Panel -->
+    <div class="card">
+      <h2 style="margin-top:0;">New Match</h2>
+      <p class="subtle" style="margin-top:-.3rem; margin-bottom:.75rem;">Enter teams, players, and scores. Check “legacy” for matches played before this tracker existed.</p>
+      <div class="row">
+        <div>
+          <label for="teamAName">Team A Name</label>
+          <input id="teamAName" placeholder="e.g. Boards & Brews" />
+        </div>
+        <div>
+          <label for="teamBName">Team B Name</label>
+          <input id="teamBName" placeholder="e.g. Bag Tossers" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="team-box">
+          <div class="team-title">Team A Players</div>
+          <textarea id="teamAPlayers" rows="2" placeholder="One line or comma/pipe-separated&#10;e.g. Mike, Jess"></textarea>
+        </div>
+        <div class="team-box">
+          <div class="team-title">Team B Players</div>
+          <textarea id="teamBPlayers" rows="2" placeholder="e.g. Chris, Sam"></textarea>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="teamAScore">Team A Score</label>
+          <input type="number" id="teamAScore" min="0" max="21" placeholder="21" />
+        </div>
+        <div>
+          <label for="teamBScore">Team B Score</label>
+          <input type="number" id="teamBScore" min="0" max="21" placeholder="15" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="location">Location / Notes (optional)</label>
+          <input id="location" placeholder="Backyard, League Night..." />
+        </div>
+        <div>
+          <label for="date">Date/Time</label>
+          <input id="date" type="datetime-local" />
+        </div>
+      </div>
+      <div class="row" style="align-items:center;">
+        <div>
+          <label>&nbsp;</label>
+          <label style="display:flex; gap:.5rem; align-items:center;">
+            <input type="checkbox" id="legacyFlag" />
+            <span class="subtle">Mark as legacy (pre-tracker)</span>
+          </label>
+        </div>
+        <div style="text-align:right;">
+          <button id="saveMatchBtn">Save Match</button>
+          <button id="clearAllBtn" class="danger">Clear All</button>
+        </div>
+      </div>
+
+      <div class="section importer">
+        <details>
+          <summary class="subtle">Bulk import legacy matches (CSV)</summary>
+          <p class="subtle" style="margin:.5rem 0 .25rem;">Columns: <code>dateTime, teamAName, teamAPlayers, teamAScore, teamBName, teamBPlayers, teamBScore, notes</code>. Players can be comma or <b>|</b>-separated.</p>
+          <textarea id="csvInput" placeholder="2024-08-12T18:30, Boards & Brews, Mike|Jess, 21, Bag Tossers, Chris|Sam, 14, Backyard finals"></textarea>
+          <div class="controls" style="margin-top:.5rem; justify-content:space-between;">
+            <div class="subtle">Tip: Use <b>|</b> between players inside a cell (safer than commas).</div>
+            <div>
+              <button id="previewCsvBtn" class="secondary">Preview</button>
+              <button id="importCsvBtn">Import as Legacy</button>
+            </div>
+          </div>
+          <div id="csvPreview" class="subtle" style="margin-top:.5rem;"></div>
+        </details>
+      </div>
+    </div>
+
+    <!-- History + Auto Leaderboard Panel -->
+    <div class="card">
+      <div class="topbar">
+        <h2 style="margin:0;">Match History</h2>
+        <small id="matchCount" style="color:var(--muted);"></small>
+      </div>
+
+      <!-- Filters and actions -->
+      <div class="controls" style="margin:.25rem 0 .5rem;">
+        <div class="tabs" role="tablist" aria-label="Filter matches">
+          <div class="tab active" data-view="all" role="tab" aria-selected="true">All</div>
+          <div class="tab" data-view="regular" role="tab">Regular</div>
+          <div class="tab" data-view="legacy" role="tab">Legacy</div>
+        </div>
+        <input id="search" placeholder="Search team, player, notes" style="max-width:260px;" />
+        <input id="fromDate" type="date" title="From"/>
+        <input id="toDate" type="date" title="To"/>
+        <button id="resetFilters" class="secondary">Reset</button>
+        <div style="flex:1"></div>
+        <button id="exportJson" class="ghost">Export JSON</button>
+        <button id="exportCsv" class="ghost">Export CSV</button>
+      </div>
+
+      <!-- Legacy wins/losses strip (shown only in Legacy view) -->
+      <div id="legacySummary" class="legacy-summary">
+        <div class="pill"><span class="val" id="legacyWins">0</span> <span class="lab">Wins</span></div>
+        <div class="pill"><span class="val" id="legacyLosses">0</span> <span class="lab">Losses</span></div>
+        <div class="pill"><span class="val" id="legacyTotal">0</span> <span class="lab">Total Legacy</span></div>
+      </div>
+
+      <!-- Auto Leaderboard -->
+      <div class="leaderboard" aria-label="Individual Leaderboard">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <strong>Individual Leaderboard (auto-calculated)</strong>
+          <div class="lb-subtle">Built from saved matches</div>
+        </div>
+        <div class="lb-controls">
+          <label style="display:flex; gap:.4rem; align-items:center;">
+            <input type="checkbox" id="lbIncludeRegular" checked /> <span class="lb-subtle">Include Regular</span>
+          </label>
+          <label style="display:flex; gap:.4rem; align-items:center;">
+            <input type="checkbox" id="lbIncludeLegacy" checked /> <span class="lb-subtle">Include Legacy</span>
+          </label>
+          <span class="lb-subtle" style="margin-left:auto;">Sort by:
+            <span id="lbSortWins" class="lb-sort">Wins</span> •
+            <span id="lbSortWinPct" class="lb-sort">Win%</span> •
+            <span id="lbSortGames" class="lb-sort">Games</span> •
+            <span id="lbSortName" class="lb-sort">Name</span>
+          </span>
+        </div>
+        <div class="lb-row" style="font-size:.75rem; color:var(--muted); border-bottom:1px solid rgba(148,163,184,.12);">
+          <div>Player</div><div>Wins</div><div>Losses</div><div>Games</div><div>Win %</div>
+        </div>
+        <div id="lbBody"></div>
+        <div id="lbEmpty" class="empty" style="display:none;">No players yet — add matches to build the board.</div>
+      </div>
+
+      <!-- Stats (for All/Regular views) -->
+      <div class="stat-grid" id="stats">
+        <div class="stat"><div class="label">Total</div><div class="value" id="statTotal">0</div></div>
+        <div class="stat"><div class="label">Average Points (A/B)</div><div class="value" id="statAvg">0 / 0</div></div>
+        <div class="stat"><div class="label">Win Rate</div><div class="value" id="statWin">—</div></div>
+      </div>
+
+      <!-- Table -->
+      <table id="historyTable">
+        <thead>
+          <tr id="theadRow"></tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+      <div id="emptyState" class="empty" style="display:none;">No matches yet — add your first one!</div>
+    </div>
+  </div>
+
+  <template id="rowActionsTpl">
+    <div class="actions">
+      <button class="secondary" data-action="edit">Edit</button>
+      <button class="danger" data-action="delete">Delete</button>
+    </div>
+  </template>
+
+  <script>
+    // ---- Storage Keys ----
+    const V1_KEY = "cornholeMatchesV1"; // original
+    const V2_KEY = "cornholeMatchesV2"; // current with legacy flag
+
+    // ---- Migration ----
+    function migrateIfNeeded() {
+      const v2 = localStorage.getItem(V2_KEY);
+      if (v2) return; // already on V2
+      const v1 = localStorage.getItem(V1_KEY);
+      if (!v1) return; // nothing to migrate
+      try {
+        const parsed = JSON.parse(v1);
+        if (Array.isArray(parsed)) {
+          const migrated = parsed.map(m => ({ ...m, legacy: false }));
+          localStorage.setItem(V2_KEY, JSON.stringify(migrated));
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    // ---- Matches load/save ----
+    function loadMatches() {
+      const raw = localStorage.getItem(V2_KEY);
+      if (raw) { try { return JSON.parse(raw) || []; } catch { return []; } }
+      return [];
+    }
+    function saveMatches(matches) { localStorage.setItem(V2_KEY, JSON.stringify(matches)); }
+
+    // ---- Utilities ----
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    const byId = id => document.getElementById(id);
+    function newId() { return (crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2))); }
+    function parsePlayers(str) {
+      if (!str) return [];
+      return str.split(/[|,]/).map(p => p.trim()).filter(Boolean);
+    }
+    function toCSVLine(cells) {
+      return cells.map(v => {
+        if (v == null) v = "";
+        v = String(v);
+        if (/[",\n]/.test(v)) v = '"' + v.replace(/"/g, '""') + '"';
+        return v;
+      }).join(",");
+    }
+
+    // ---- Rendering State ----
+    const state = { view: 'all', q: '', from: '', to: '' };
+    let lbSort = { key: 'wins', dir: 'desc' }; // 'wins' | 'winpct' | 'games' | 'name'
+
+    // ---- Stats ----
+    function computeStats(list) {
+      const n = list.length;
+      if (n === 0) return { total: 0, avgA: 0, avgB: 0, winPct: null };
+      let sumA = 0, sumB = 0, wins = 0;
+      for (const m of list) {
+        sumA += Number(m.teamA.score) || 0;
+        sumB += Number(m.teamB.score) || 0;
+        if (m.teamA.score !== m.teamB.score) wins += (m.teamA.score > m.teamB.score ? 1 : 0);
+      }
+      const winPct = (wins / n) * 100;
+      return { total: n, avgA: (sumA/n), avgB: (sumB/n), winPct };
+    }
+
+    function computeLegacySummary(list) {
+      let wins = 0, losses = 0, ties = 0;
+      for (const m of list) {
+        const a = Number(m.teamA.score)||0, b = Number(m.teamB.score)||0;
+        if (a > b) wins++; else if (b > a) losses++; else ties++;
+      }
+      return { wins, losses, ties, total: list.length };
+    }
+
+    // ---- Leaderboard Builder ----
+    function normalizeName(name) {
+      return name.trim().replace(/\s+/g, ' ').toLowerCase();
+    }
+
+    function buildLeaderboard(allMatches, includeRegular = true, includeLegacy = true) {
+      // Apply include toggles
+      let pool = allMatches.filter(m => (includeRegular && !m.legacy) || (includeLegacy && m.legacy));
+
+      // Aggregate per-player W/L
+      const map = new Map(); // key: normalized name -> {name, wins, losses, games}
+      for (const m of pool) {
+        const aPlayers = (m.teamA.players || []).map(p => p.trim()).filter(Boolean);
+        const bPlayers = (m.teamB.players || []).map(p => p.trim()).filter(Boolean);
+        const a = Number(m.teamA.score)||0, b = Number(m.teamB.score)||0;
+
+        const winner = a > b ? 'A' : (b > a ? 'B' : 'TIE');
+
+        // helper: ensure record
+        function ensure(player) {
+          const key = normalizeName(player);
+          if (!key) return null;
+          if (!map.has(key)) map.set(key, { name: player.trim(), wins: 0, losses: 0, games: 0 });
+          return map.get(key);
+        }
+
+        // Count games for everyone who appeared
+        for (const p of aPlayers) { const r = ensure(p); if (r) r.games += 1; }
+        for (const p of bPlayers) { const r = ensure(p); if (r) r.games += 1; }
+
+        if (winner === 'TIE') continue; // neither team gets a W/L on tie
+
+        const winners = winner === 'A' ? aPlayers : bPlayers;
+        const losers  = winner === 'A' ? bPlayers : aPlayers;
+
+        for (const p of winners) { const r = ensure(p); if (r) r.wins += 1; }
+        for (const p of losers)  { const r = ensure(p); if (r) r.losses += 1; }
+      }
+
+      // Convert to array + computed fields
+      const arr = Array.from(map.values()).map(r => ({
+        ...r,
+        winpct: r.games ? (r.wins / r.games) * 100 : 0
+      }));
+
+      // Sort
+      if (lbSort.key === 'wins') {
+        arr.sort((a,b) => (b.wins - a.wins) || (b.winpct - a.winpct) || a.name.localeCompare(b.name));
+      } else if (lbSort.key === 'winpct') {
+        arr.sort((a,b) => (b.winpct - a.winpct) || (b.wins - a.wins) || a.name.localeCompare(b.name));
+      } else if (lbSort.key === 'games') {
+        arr.sort((a,b) => (b.games - a.games) || (b.wins - a.wins) || a.name.localeCompare(b.name));
+      } else { // name
+        arr.sort((a,b) => a.name.localeCompare(b.name));
+      }
+      if (lbSort.dir === 'asc') arr.reverse();
+
+      return arr;
+    }
+
+    function renderLeaderboard() {
+      const body = byId('lbBody');
+      const empty = byId('lbEmpty');
+      const includeRegular = byId('lbIncludeRegular').checked;
+      const includeLegacy  = byId('lbIncludeLegacy').checked;
+
+      const data = buildLeaderboard(loadMatches(), includeRegular, includeLegacy);
+
+      body.innerHTML = '';
+      if (!data.length) {
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      for (const r of data) {
+        const row = document.createElement('div');
+        row.className = 'lb-row';
+        row.innerHTML = `
+          <div><strong>${r.name}</strong></div>
+          <div>${r.wins}</div>
+          <div>${r.losses}</div>
+          <div>${r.games}</div>
+          <div>${r.winpct.toFixed(0)}%</div>
+        `;
+        body.appendChild(row);
+      }
+    }
+
+    // ---- Table Header ----
+    function renderHeader() {
+      const tr = byId('theadRow');
+      tr.innerHTML = '';
+      if (state.view === 'legacy') {
+        ['Date','Winner','Loser','Score','Notes',''].forEach(txt => {
+          const th = document.createElement('th'); th.textContent = txt; tr.appendChild(th);
+        });
+      } else {
+        ['Date','Teams / Players','Score','Notes',''].forEach(txt => {
+          const th = document.createElement('th'); th.textContent = txt; tr.appendChild(th);
+        });
+      }
+    }
+
+    // ---- Matches Table ----
+    function renderMatches() {
+      const tbody = byId("historyBody");
+      const empty = byId("emptyState");
+      const count = byId("matchCount");
+      const legacyStrip = byId('legacySummary');
+      const statsCard = byId('stats');
+
+      renderHeader();
+
+      let matches = loadMatches();
+      // Filter by view
+      matches = matches.filter(m => state.view === 'all' ? true : state.view === 'legacy' ? m.legacy : !m.legacy);
+      // Filter by search
+      const q = state.q.trim().toLowerCase();
+      if (q) {
+        matches = matches.filter(m => {
+          const hay = [m.teamA.name, m.teamB.name, ...(m.teamA.players||[]), ...(m.teamB.players||[]), m.notes||''].join(' ').toLowerCase();
+          return hay.includes(q);
+        });
+      }
+      // Date filters
+      if (state.from) {
+        const f = new Date(state.from);
+        matches = matches.filter(m => new Date(m.dateTime) >= f);
+      }
+      if (state.to) {
+        const t = new Date(state.to);
+        t.setHours(23,59,59,999);
+        matches = matches.filter(m => new Date(m.dateTime) <= t);
+      }
+
+      // Sort newest first
+      matches.sort((a,b) => new Date(b.dateTime) - new Date(a.dateTime));
+
+      tbody.innerHTML = "";
+      if (!matches.length) {
+        empty.style.display = 'block';
+        count.textContent = '0 matches';
+      } else {
+        empty.style.display = 'none';
+        count.textContent = matches.length + (matches.length === 1 ? ' match' : ' matches');
+
+        const legacyView = state.view === 'legacy';
+        // Toggle summary vs stats
+        if (legacyView) {
+          const { wins, losses, total } = computeLegacySummary(matches);
+          byId('legacyWins').textContent = wins;
+          byId('legacyLosses').textContent = losses;
+          byId('legacyTotal').textContent = total;
+          legacyStrip.style.display = 'flex';
+          statsCard.style.display = 'none';
+        } else {
+          legacyStrip.style.display = 'none';
+          statsCard.style.display = '';
+          const stats = computeStats(matches);
+          byId('statTotal').textContent = String(stats.total);
+          byId('statAvg').textContent = `${stats.avgA.toFixed(1)} / ${stats.avgB.toFixed(1)}`;
+          byId('statWin').textContent = stats.winPct == null ? '—' : `${stats.winPct.toFixed(0)}% (Team A)`;
+        }
+
+        for (const match of matches) {
+          const tr = document.createElement('tr');
+
+          const dateTd = document.createElement('td');
+          const d = new Date(match.dateTime);
+          dateTd.innerHTML = `${d.toLocaleString()}${match.legacy ? '<div class="badges"><span class="badge legacy">Legacy</span></div>' : ''}`;
+          tr.appendChild(dateTd);
+
+          if (state.view === 'legacy') {
+            // Winner / Loser style
+            const a = Number(match.teamA.score)||0; const b = Number(match.teamB.score)||0;
+            const winnerName = a > b ? match.teamA.name : b > a ? match.teamB.name : 'Tie';
+            const loserName  = a > b ? match.teamB.name : b > a ? match.teamA.name : '—';
+
+            const winTd = document.createElement('td');
+            winTd.innerHTML = `<strong>${winnerName}</strong>`;
+            tr.appendChild(winTd);
+
+            const loseTd = document.createElement('td');
+            loseTd.textContent = loserName;
+            tr.appendChild(loseTd);
+
+            const scoreTd = document.createElement('td');
+            scoreTd.innerHTML = `<span class="score-badge">${a} - ${b}</span>`;
+            tr.appendChild(scoreTd);
+          } else {
+            // Regular table with teams/players
+            const teamsTd = document.createElement('td');
+            const teamALine = document.createElement('div');
+            const teamBLine = document.createElement('div');
+            teamALine.innerHTML = `<strong>${match.teamA.name}</strong> <small style="color:#94a3b8">(${(match.teamA.players||[]).join(', ')||'—'})</small>`;
+            teamBLine.innerHTML = `<strong>${match.teamB.name}</strong> <small style="color:#94a3b8">(${(match.teamB.players||[]).join(', ')||'—'})</small>`;
+            teamsTd.appendChild(teamALine); teamsTd.appendChild(teamBLine);
+            tr.appendChild(teamsTd);
+
+            const scoreTd = document.createElement('td');
+            const a = Number(match.teamA.score)||0; const b = Number(match.teamB.score)||0;
+            let winner = '';
+            if (a > b) winner = match.teamA.name; else if (b > a) winner = match.teamB.name; else winner = 'Tie';
+            scoreTd.innerHTML = `<div><span class="winner">${winner}</span><br/><span class="score-badge">${a} - ${b}</span></div>`;
+            tr.appendChild(scoreTd);
+          }
+
+          const notesTd = document.createElement('td');
+          notesTd.textContent = match.notes || '—';
+          tr.appendChild(notesTd);
+
+          const actionsTd = document.createElement('td');
+          const frag = document.getElementById('rowActionsTpl').content.cloneNode(true);
+          frag.querySelector('[data-action="edit"]').addEventListener('click', () => editMatch(match.id));
+          frag.querySelector('[data-action="delete"]').addEventListener('click', () => deleteMatch(match.id));
+          actionsTd.appendChild(frag);
+          tr.appendChild(actionsTd);
+
+          tbody.appendChild(tr);
+        }
+      }
+
+      // Rebuild leaderboard on any change
+      renderLeaderboard();
+    }
+
+    // ---- CRUD for matches ----
+    function upsertMatch(m) {
+      const list = loadMatches();
+      const idx = list.findIndex(x => x.id === m.id);
+      if (idx >= 0) list[idx] = m; else list.push(m);
+      saveMatches(list);
+      renderMatches();
+    }
+    function deleteMatch(id) {
+      if (!confirm('Delete this match?')) return;
+      const list = loadMatches().filter(m => m.id !== id);
+      saveMatches(list);
+      renderMatches();
+    }
+    function editMatch(id) {
+      const m = loadMatches().find(x => x.id === id);
+      if (!m) return;
+      byId('teamAName').value = m.teamA.name || '';
+      byId('teamBName').value = m.teamB.name || '';
+      byId('teamAPlayers').value = (m.teamA.players||[]).join(', ');
+      byId('teamBPlayers').value = (m.teamB.players||[]).join(', ');
+      byId('teamAScore').value = m.teamA.score;
+      byId('teamBScore').value = m.teamB.score;
+      byId('location').value = m.notes || '';
+      const iso = new Date(m.dateTime);
+      byId('date').value = new Date(iso.getTime() - iso.getTimezoneOffset()*60000).toISOString().slice(0,16);
+      byId('legacyFlag').checked = !!m.legacy;
+      byId('saveMatchBtn').dataset.editing = m.id;
+      byId('saveMatchBtn').textContent = 'Update Match';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ---- Export / Import ----
+    function exportJSON() {
+      const data = JSON.stringify(loadMatches(), null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'cornhole-matches.json'; a.click(); URL.revokeObjectURL(url);
+    }
+    function exportCSV() {
+      const list = loadMatches();
+      const header = ['dateTime','legacy','teamAName','teamAPlayers','teamAScore','teamBName','teamBPlayers','teamBScore','notes'];
+      const rows = [header.join(',')];
+      for (const m of list) {
+        rows.push(toCSVLine([
+          m.dateTime,
+          m.legacy ? '1' : '0',
+          m.teamA.name,
+          (m.teamA.players||[]).join('|'),
+          m.teamA.score,
+          m.teamB.name,
+          (m.teamB.players||[]).join('|'),
+          m.teamB.score,
+          m.notes || ''
+        ]));
+      }
+      const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'cornhole-matches.csv'; a.click(); URL.revokeObjectURL(url);
+    }
+    function previewCSV(text) {
+      const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean).slice(0, 5);
+      const out = lines.map((line,i) => `<div>Row ${i+1}: ${line}</div>`).join('');
+      byId('csvPreview').innerHTML = out || '<em>No rows detected.</em>';
+    }
+    function importCSV(text) {
+      const rows = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+      if (!rows.length) return 0;
+      const list = loadMatches();
+      let added = 0;
+      for (const line of rows) {
+        // Split on commas not within quotes
+        const cells = line.match(/\"([^\"]*)\"|[^,]+/g) || [];
+        const cleaned = cells.map(s => (s||'').replace(/^\"|\"$/g, '').replace(/^"|"$/g, ''));
+        const [dateTime, aName, aPlayers, aScore, bName, bPlayers, bScore, notes] = cleaned;
+        if (!dateTime || !aName || !bName) continue;
+        const match = {
+          id: newId(),
+          dateTime,
+          legacy: true,
+          teamA: { name: aName, players: parsePlayers(aPlayers), score: Number(aScore)||0 },
+          teamB: { name: bName, players: parsePlayers(bPlayers), score: Number(bScore)||0 },
+          notes: notes || ''
+        };
+        list.push(match); added++;
+      }
+      saveMatches(list);
+      renderMatches();
+      return added;
+    }
+
+    // ---- Init & Events ----
+    document.addEventListener('DOMContentLoaded', () => {
+      migrateIfNeeded();
+
+      // Default date/time now (local)
+      const now = new Date();
+      byId('date').value = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+
+      // Save / Update match
+      byId('saveMatchBtn').addEventListener('click', () => {
+        const editingId = byId('saveMatchBtn').dataset.editing;
+        const id = editingId || newId();
+        const match = {
+          id,
+          dateTime: byId('date').value || new Date().toISOString(),
+          legacy: !!byId('legacyFlag').checked,
+          teamA: {
+            name: (byId('teamAName').value.trim() || 'Team A'),
+            players: parsePlayers(byId('teamAPlayers').value.trim()),
+            score: Number(byId('teamAScore').value || '0')
+          },
+          teamB: {
+            name: (byId('teamBName').value.trim() || 'Team B'),
+            players: parsePlayers(byId('teamBPlayers').value.trim()),
+            score: Number(byId('teamBScore').value || '0')
+          },
+          notes: byId('location').value.trim()
+        };
+        upsertMatch(match);
+
+        // reset form state
+        byId('teamAScore').value = '';
+        byId('teamBScore').value = '';
+        byId('legacyFlag').checked = false;
+        delete byId('saveMatchBtn').dataset.editing;
+        byId('saveMatchBtn').textContent = 'Save Match';
+      });
+
+      byId('clearAllBtn').addEventListener('click', () => {
+        if (confirm('Delete ALL saved matches?')) {
+          saveMatches([]); renderMatches();
+        }
+      });
+
+      // Filters
+      $$('.tab').forEach(el => el.addEventListener('click', () => {
+        $$('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        el.setAttribute('aria-selected', 'true');
+        state.view = el.dataset.view;
+        renderMatches();
+      }));
+      byId('search').addEventListener('input', e => { state.q = e.target.value; renderMatches(); });
+      byId('fromDate').addEventListener('change', e => { state.from = e.target.value; renderMatches(); });
+      byId('toDate').addEventListener('change', e => { state.to = e.target.value; renderMatches(); });
+      byId('resetFilters').addEventListener('click', () => {
+        state.view = 'all'; state.q=''; state.from=''; state.to='';
+        $$('.tab').forEach(t => t.classList.remove('active')); $$('.tab')[0].classList.add('active');
+        byId('search').value=''; byId('fromDate').value=''; byId('toDate').value='';
+        renderMatches();
+      });
+
+      // Export / Import
+      byId('exportJson').addEventListener('click', exportJSON);
+      byId('exportCsv').addEventListener('click', exportCSV);
+      byId('previewCsvBtn').addEventListener('click', () => previewCSV(byId('csvInput').value));
+      byId('importCsvBtn').addEventListener('click', () => {
+        const count = importCSV(byId('csvInput').value);
+        alert(count + ' legacy matches imported');
+        byId('csvInput').value = '';
+        byId('csvPreview').innerHTML = '';
+        const legacyTab = document.querySelector('.tab[data-view="legacy"]');
+        legacyTab.click();
+      });
+
+      // Leaderboard toggles + sorts
+      byId('lbIncludeRegular').addEventListener('change', renderLeaderboard);
+      byId('lbIncludeLegacy').addEventListener('change', renderLeaderboard);
+      byId('lbSortWins').addEventListener('click', () => { lbSort = { key:'wins', dir: lbSort.key==='wins' && lbSort.dir==='desc' ? 'asc':'desc' }; renderLeaderboard(); });
+      byId('lbSortWinPct').addEventListener('click', () => { lbSort = { key:'winpct', dir: lbSort.key==='winpct' && lbSort.dir==='desc' ? 'asc':'desc' }; renderLeaderboard(); });
+      byId('lbSortGames').addEventListener('click', () => { lbSort = { key:'games', dir: lbSort.key==='games' && lbSort.dir==='desc' ? 'asc':'desc' }; renderLeaderboard(); });
+      byId('lbSortName').addEventListener('click', () => { lbSort = { key:'name', dir: lbSort.key==='name' && lbSort.dir==='desc' ? 'asc':'desc' }; renderLeaderboard(); });
+
+      // Initial paint
+      renderMatches();      // also calls renderLeaderboard()
+      renderLeaderboard();  // ensure LB shows with toggle states
+    });
+  </script>
+</body>
+</html>
