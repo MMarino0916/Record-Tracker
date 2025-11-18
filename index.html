@@ -49,7 +49,7 @@
       display: block;
       margin-bottom: .25rem;
     }
-    input, textarea, select {
+    input, textarea {
       width: 100%;
       background: rgba(15, 23, 42, 0.4);
       border: 1px solid rgba(148, 163, 184, 0.2);
@@ -143,9 +143,7 @@
       font-size: .8rem;
     }
     @media (max-width: 960px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
+      .container { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -155,7 +153,7 @@
     <div class="card">
       <h2 style="margin-top:0;">New Match</h2>
       <p style="font-size:.75rem; color:var(--muted); margin-top:-.3rem; margin-bottom:.75rem;">
-        Enter teams, players, and scores. You can change players every match.
+        Enter teams, players, and scores. PIN required to save.
       </p>
       <div class="row">
         <div>
@@ -189,7 +187,7 @@
       </div>
       <div class="row">
         <div>
-          <label for="location">Location / Notes (optional)</label>
+          <label for="location">Location / Notes</label>
           <input id="location" placeholder="Backyard, League Night..." />
         </div>
         <div>
@@ -198,7 +196,7 @@
         </div>
       </div>
       <button id="saveMatchBtn" style="margin-top:.5rem;">Save Match</button>
-      <button id="clearAllBtn" class="danger" style="margin-top:.5rem; float:right;">Clear All Matches</button>
+      <button id="clearAllBtn" class="danger" style="margin-top:.5rem; float:right;">Clear All</button>
     </div>
     <div class="card">
       <div class="topbar">
@@ -219,97 +217,139 @@
       <div id="emptyState" class="empty" style="display:none;">No matches yet — add your first one!</div>
     </div>
   </div>
+
   <script>
-    const storageKey = "cornholeMatchesV1";
-    const requiredPin = "0340"; // PIN required before saving a match
+    // ===== JSONBin Configuration =====
+    const BIN_ID = "691c932aae596e708f60ec2f";
+    const API_KEY = "$2a$10$pR2xuZ4yCudHQPF8CwIm6eW7HyuW3t5iPaKvws50HmuoexpwaUtNu"; 
+    const requiredPin = "0340";
 
-    function loadMatches(){const raw=localStorage.getItem(storageKey);return raw?JSON.parse(raw):[];}
-    function saveMatches(matches){localStorage.setItem(storageKey,JSON.stringify(matches));}
+    // ===== JSONBin Functions =====
+    async function loadMatches() {
+      try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+          headers: { "X-Master-Key": API_KEY }
+        });
+        const data = await res.json();
+        return data.record?.matches || [];
+      } catch (err) {
+        console.error("Error loading from JSONBin:", err);
+        return [];
+      }
+    }
 
-    function renderMatches(){
-      const matches=loadMatches();
-      const tbody=document.getElementById("historyBody");
-      const empty=document.getElementById("emptyState");
-      const count=document.getElementById("matchCount");
-      tbody.innerHTML="";
-      if(!matches.length){empty.style.display="block";count.textContent="0 matches";return;}
-      empty.style.display="none";
-      count.textContent=matches.length+(matches.length===1?" match":" matches");
-      matches.sort((a,b)=>new Date(b.dateTime)-new Date(a.dateTime)).forEach(match=>{
-        const tr=document.createElement("tr");
-        const dateTd=document.createElement("td");
-        const d=new Date(match.dateTime);
-        dateTd.textContent=d.toLocaleString();
-        tr.appendChild(dateTd);
-        const teamsTd=document.createElement("td");
-        const teamALine=document.createElement("div");
-        const teamBLine=document.createElement("div");
-        teamALine.innerHTML=`<strong>${match.teamA.name}</strong> <small style="color:#94a3b8">(${match.teamA.players.join(", ")||"—"})</small>`;
-        teamBLine.innerHTML=`<strong>${match.teamB.name}</strong> <small style="color:#94a3b8">(${match.teamB.players.join(", ")||"—"})</small>`;
-        teamsTd.appendChild(teamALine);
-        teamsTd.appendChild(teamBLine);
-        tr.appendChild(teamsTd);
-        const scoreTd=document.createElement("td");
-        const a=match.teamA.score;
-        const b=match.teamB.score;
-        let winner="";
-        if(a>b)winner=match.teamA.name;
-        else if(b>a)winner=match.teamB.name;
-        else winner="Tie";
-        scoreTd.innerHTML=`<div><span class="winner">${winner}</span><br/><span class="score-badge">${a} - ${b}</span></div>`;
-        tr.appendChild(scoreTd);
-        const notesTd=document.createElement("td");
-        notesTd.textContent=match.notes||"—";
-        tr.appendChild(notesTd);
-        tbody.appendChild(tr);
+    async function saveMatches(matches) {
+      try {
+        const body = { matches };
+        await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": API_KEY
+          },
+          body: JSON.stringify(body)
+        });
+      } catch (err) {
+        console.error("Error saving to JSONBin:", err);
+      }
+    }
+
+    // ===== Render Matches =====
+    function renderMatches() {
+      loadMatches().then(matches => {
+        const tbody = document.getElementById("historyBody");
+        const empty = document.getElementById("emptyState");
+        const count = document.getElementById("matchCount");
+        tbody.innerHTML = "";
+        if (!matches.length) {
+          empty.style.display = "block";
+          count.textContent = "0 matches";
+          return;
+        }
+        empty.style.display = "none";
+        count.textContent = matches.length + (matches.length === 1 ? " match" : " matches");
+        matches.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime)).forEach(match => {
+          const tr = document.createElement("tr");
+          const d = new Date(match.dateTime);
+          const dateTd = document.createElement("td");
+          dateTd.textContent = d.toLocaleString();
+          tr.appendChild(dateTd);
+          const teamsTd = document.createElement("td");
+          teamsTd.innerHTML = `
+            <div><strong>${match.teamA.name}</strong> 
+            <small style="color:#94a3b8">(${match.teamA.players.join(", ") || "—"})</small></div>
+            <div><strong>${match.teamB.name}</strong> 
+            <small style="color:#94a3b8">(${match.teamB.players.join(", ") || "—"})</small></div>
+          `;
+          tr.appendChild(teamsTd);
+          const scoreTd = document.createElement("td");
+          const a = match.teamA.score, b = match.teamB.score;
+          let winner = "";
+          if (a > b) winner = match.teamA.name;
+          else if (b > a) winner = match.teamB.name;
+          else winner = "Tie";
+          scoreTd.innerHTML = `<div><span class="winner">${winner}</span><br/><span class="score-badge">${a} - ${b}</span></div>`;
+          tr.appendChild(scoreTd);
+          const notesTd = document.createElement("td");
+          notesTd.textContent = match.notes || "—";
+          tr.appendChild(notesTd);
+          tbody.appendChild(tr);
+        });
       });
     }
 
-    document.addEventListener("DOMContentLoaded",()=>{
-      const dateInput=document.getElementById("date");
-      const now=new Date();
-      dateInput.value=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+    // ===== Events =====
+    document.addEventListener("DOMContentLoaded", () => {
+      const dateInput = document.getElementById("date");
+      const now = new Date();
+      dateInput.value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
       renderMatches();
 
-      document.getElementById("saveMatchBtn").addEventListener("click",()=>{
+      document.getElementById("saveMatchBtn").addEventListener("click", async () => {
         const enteredPin = prompt("Enter PIN to save match:");
-        if(enteredPin !== requiredPin){
+        if (enteredPin !== requiredPin) {
           alert("Incorrect PIN — match not saved.");
           return;
         }
-        const teamAName=document.getElementById("teamAName").value.trim()||"Team A";
-        const teamBName=document.getElementById("teamBName").value.trim()||"Team B";
-        const teamAPlayers=document.getElementById("teamAPlayers").value.trim();
-        const teamBPlayers=document.getElementById("teamBPlayers").value.trim();
-        const teamAScore=parseInt(document.getElementById("teamAScore").value||"0",10);
-        const teamBScore=parseInt(document.getElementById("teamBScore").value||"0",10);
-        const notes=document.getElementById("location").value.trim();
-        const dateTime=document.getElementById("date").value||new Date().toISOString();
-        const match={
-          id:crypto.randomUUID?crypto.randomUUID():Date.now().toString(),
+
+        const teamAName = document.getElementById("teamAName").value.trim() || "Team A";
+        const teamBName = document.getElementById("teamBName").value.trim() || "Team B";
+        const teamAPlayers = document.getElementById("teamAPlayers").value.trim();
+        const teamBPlayers = document.getElementById("teamBPlayers").value.trim();
+        const teamAScore = parseInt(document.getElementById("teamAScore").value || "0", 10);
+        const teamBScore = parseInt(document.getElementById("teamBScore").value || "0", 10);
+        const notes = document.getElementById("location").value.trim();
+        const dateTime = document.getElementById("date").value || new Date().toISOString();
+
+        const match = {
+          id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
           dateTime,
-          teamA:{
-            name:teamAName,
-            players:teamAPlayers?teamAPlayers.split(",").map(p=>p.trim()).filter(Boolean):[],
-            score:teamAScore
+          teamA: {
+            name: teamAName,
+            players: teamAPlayers ? teamAPlayers.split(",").map(p => p.trim()).filter(Boolean) : [],
+            score: teamAScore
           },
-          teamB:{
-            name:teamBName,
-            players:teamBPlayers?teamBPlayers.split(",").map(p=>p.trim()).filter(Boolean):[],
-            score:teamBScore
+          teamB: {
+            name: teamBName,
+            players: teamBPlayers ? teamBPlayers.split(",").map(p => p.trim()).filter(Boolean) : [],
+            score: teamBScore
           },
           notes
         };
-        const matches=loadMatches();
+
+        const matches = await loadMatches();
         matches.push(match);
-        saveMatches(matches);
+        await saveMatches(matches);
         renderMatches();
-        document.getElementById("teamAScore").value="";
-        document.getElementById("teamBScore").value="";
+        document.getElementById("teamAScore").value = "";
+        document.getElementById("teamBScore").value = "";
       });
 
-      document.getElementById("clearAllBtn").addEventListener("click",()=>{
-        if(confirm("Delete all saved matches?")){saveMatches([]);renderMatches();}
+      document.getElementById("clearAllBtn").addEventListener("click", async () => {
+        if (confirm("Delete all saved matches?")) {
+          await saveMatches([]);
+          renderMatches();
+        }
       });
     });
   </script>
