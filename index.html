@@ -225,27 +225,33 @@
     const requiredPin = "0340";
 
     // ===== JSONBin Functions =====
-async function loadMatches() {
-  const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`);
-  const data = await res.json();
-  return data.record?.matches || [];
-}
+const API = "https://solitary-moon-7578.michaelamarino16.workers.dev"; // replace with your Worker URL
+  const requiredPin = "0340";
 
-    async function saveMatches(matches) {
-      try {
-        const body = { matches };
-        await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Master-Key": API_KEY
-          },
-          body: JSON.stringify(body)
-        });
-      } catch (err) {
-        console.error("Error saving to JSONBin:", err);
-      }
+  async function loadMatches() {
+    try {
+      const res = await fetch(API);
+      return await res.json();
+    } catch (err) {
+      console.error("Error loading matches:", err);
+      return [];
     }
+  }
+
+  async function saveMatches(matches) {
+    try {
+      await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ matches })
+      });
+    } catch (err) {
+      console.error("Error saving matches:", err);
+    }
+  }
+
+  // keep your existing renderMatches(), event listeners, etc.
+</script>
 
     // ===== Render Matches =====
     function renderMatches() {
