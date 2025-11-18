@@ -225,18 +225,16 @@
     const requiredPin = "0340";
 
     // ===== JSONBin Functions =====
-    async function loadMatches() {
-      try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-          headers: { "X-Master-Key": API_KEY }
-        });
-        const data = await res.json();
-        return data.record?.matches || [];
-      } catch (err) {
-        console.error("Error loading from JSONBin:", err);
-        return [];
-      }
-    }
+  async function loadMatches() {
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`);
+    const data = await res.json();
+    return data.record?.matches || [];
+  } catch (err) {
+    console.error("Error loading from JSONBin:", err);
+    return [];
+  }
+}
 
     async function saveMatches(matches) {
       try {
