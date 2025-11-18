@@ -22,16 +22,12 @@
       min-height: 100vh;
       padding: 1.5rem;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 1rem;
-      letter-spacing: .02em;
-    }
+    h1 { text-align: center; margin-bottom: 1rem; letter-spacing: .02em; }
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr 1.4fr;
+      grid-template-columns: 1fr 1.6fr;
       gap: 1.5rem;
     }
     .card {
@@ -59,25 +55,15 @@
       outline: none;
       font-size: .85rem;
     }
-    input:focus, textarea:focus {
-      border-color: var(--accent);
-    }
-    .row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: .65rem;
-      margin-bottom: .65rem;
-    }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; margin-bottom: .65rem; }
     .team-box {
       border: 1px solid rgba(148, 163, 184, 0.2);
       border-radius: .75rem;
       padding: .5rem .6rem .65rem;
       background: rgba(15, 23, 42, 0.3);
     }
-    .team-title {
-      font-weight: 600;
-      margin-bottom: .35rem;
-    }
+    .team-title { font-weight: 600; margin-bottom: .35rem; }
     button {
       background: var(--accent);
       border: none;
@@ -87,33 +73,19 @@
       font-weight: 600;
       cursor: pointer;
     }
-    button.secondary {
-      background: rgba(148, 163, 184, 0.07);
-      color: var(--text);
-    }
     button.danger {
       background: rgba(249, 115, 22, 0.15);
       color: #fff;
       border: 1px solid rgba(249, 115, 22, 0.5);
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: .5rem;
-      font-size: .78rem;
-    }
+    table { width: 100%; border-collapse: collapse; margin-top: .5rem; font-size: .78rem; }
     th, td {
       border-bottom: 1px solid rgba(148, 163, 184, 0.1);
       padding: .35rem .35rem .45rem;
       text-align: left;
       vertical-align: top;
     }
-    th {
-      font-size: .7rem;
-      text-transform: uppercase;
-      letter-spacing: .03em;
-      color: var(--muted);
-    }
+    th { font-size: .7rem; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); }
     .score-badge {
       display: inline-block;
       background: rgba(56, 189, 248, 0.15);
@@ -123,33 +95,29 @@
       font-weight: 600;
       font-size: .68rem;
     }
-    .winner {
-      color: #facc15;
-      font-weight: 600;
-      font-size: .68rem;
-      display: inline-block;
-      margin-right: .4rem;
+    .winner { color: #facc15; font-weight: 600; font-size: .68rem; display: inline-block; margin-right: .4rem; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; }
+    .empty { text-align: center; color: var(--muted); padding: 1rem 0 0.3rem; font-size: .8rem; }
+    .lb-row { display: grid; grid-template-columns: 1.2fr .6fr .6fr .6fr .6fr; gap: 10px; padding: 6px 0; }
+    .lb-row + .lb-row { border-top: 1px solid rgba(148,163,184,.1); }
+    .lb-head { color: var(--muted); font-size:.8rem; }
+    .summary-bar {
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      background: rgba(2,6,23,.35);
+      border: 1px dashed rgba(148,163,184,.25);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-top: 6px;
     }
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: .5rem;
-    }
-    .empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 1rem 0 0.3rem;
-      font-size: .8rem;
-    }
-    @media (max-width: 960px) {
-      .container { grid-template-columns: 1fr; }
-    }
+    .pill { display:inline-flex; align-items: baseline; gap:8px; border:1px solid rgba(148,163,184,.25); border-radius: 999px; padding: 6px 10px; }
+    .pill .val { font-weight: 900; }
+    @media (max-width: 960px) { .container { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <h1>Cornhole Match Tracker 🟦🟧</h1>
   <div class="container">
+    <!-- Entry Form -->
     <div class="card">
       <h2 style="margin-top:0;">New Match</h2>
       <p style="font-size:.75rem; color:var(--muted); margin-top:-.3rem; margin-bottom:.75rem;">
@@ -168,11 +136,11 @@
       <div class="row">
         <div class="team-box">
           <div class="team-title">Team A Players</div>
-          <textarea id="teamAPlayers" rows="2" placeholder="One line or comma-separated&#10;e.g. Mike, Jess"></textarea>
+          <textarea id="teamAPlayers" rows="2" placeholder="Mike, Jess"></textarea>
         </div>
         <div class="team-box">
           <div class="team-title">Team B Players</div>
-          <textarea id="teamBPlayers" rows="2" placeholder="e.g. Chris, Sam"></textarea>
+          <textarea id="teamBPlayers" rows="2" placeholder="Chris, Sam"></textarea>
         </div>
       </div>
       <div class="row">
@@ -195,15 +163,17 @@
           <input id="date" type="datetime-local" />
         </div>
       </div>
-      <button id="saveMatchBtn" style="margin-top:.5rem;">Save Match</button>
-      <button id="clearAllBtn" class="danger" style="margin-top:.5rem; float:right;">Clear All</button>
+      <button id="saveMatchBtn">Save Match</button>
+      <button id="clearAllBtn" class="danger" style="float:right;">Clear All</button>
     </div>
+
+    <!-- History & Leaderboards -->
     <div class="card">
       <div class="topbar">
         <h2 style="margin:0;">Match History</h2>
         <small id="matchCount" style="color:var(--muted);"></small>
       </div>
-      <table id="historyTable">
+      <table>
         <thead>
           <tr>
             <th>Date</th>
@@ -215,16 +185,30 @@
         <tbody id="historyBody"></tbody>
       </table>
       <div id="emptyState" class="empty" style="display:none;">No matches yet — add your first one!</div>
+
+      <!-- Summary & Leaderboards -->
+      <div class="summary-bar">
+        <div class="pill"><span class="val" id="totalMatches">0</span> <span class="muted">Total Matches Played</span></div>
+      </div>
+
+      <h2 style="margin:10px 0 0">Individual Leaderboard</h2>
+      <div class="lb lb-head lb-row">
+        <div>Player</div><div>Wins</div><div>Losses</div><div>Games</div><div>Win %</div>
+      </div>
+      <div id="lbIndividuals"></div>
+
+      <h2 style="margin:14px 0 0">Team Leaderboard</h2>
+      <div class="lb lb-head lb-row">
+        <div>Team</div><div>Wins</div><div>Losses</div><div>Games</div><div>Win %</div>
+      </div>
+      <div id="lbTeams"></div>
     </div>
   </div>
 
-  <!-- ================= Cloudflare Worker Script ================= -->
   <script>
-    // ===== Worker Configuration =====
     const API = "https://solitary-moon-7578.michaelamarino16.workers.dev";
     const requiredPin = "0340";
 
-    // ===== Cloudflare Worker functions =====
     async function loadMatches() {
       try {
         const res = await fetch(API);
@@ -247,102 +231,127 @@
       }
     }
 
-    // ===== Render Matches =====
-    function renderMatches() {
-      loadMatches().then(matches => {
-        const tbody = document.getElementById("historyBody");
-        const empty = document.getElementById("emptyState");
-        const count = document.getElementById("matchCount");
-        tbody.innerHTML = "";
-        if (!matches.length) {
-          empty.style.display = "block";
-          count.textContent = "0 matches";
-          return;
-        }
-        empty.style.display = "none";
-        count.textContent = matches.length + (matches.length === 1 ? " match" : " matches");
-        matches.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime)).forEach(match => {
-          const tr = document.createElement("tr");
-          const d = new Date(match.dateTime);
-          const dateTd = document.createElement("td");
-          dateTd.textContent = d.toLocaleString();
-          tr.appendChild(dateTd);
-          const teamsTd = document.createElement("td");
-          teamsTd.innerHTML = `
-            <div><strong>${match.teamA.name}</strong> 
-            <small style="color:#94a3b8">(${match.teamA.players.join(", ") || "—"})</small></div>
-            <div><strong>${match.teamB.name}</strong> 
-            <small style="color:#94a3b8">(${match.teamB.players.join(", ") || "—"})</small></div>
-          `;
-          tr.appendChild(teamsTd);
-          const scoreTd = document.createElement("td");
-          const a = match.teamA.score, b = match.teamB.score;
-          let winner = "";
-          if (a > b) winner = match.teamA.name;
-          else if (b > a) winner = match.teamB.name;
-          else winner = "Tie";
-          scoreTd.innerHTML = `<div><span class="winner">${winner}</span><br/><span class="score-badge">${a} - ${b}</span></div>`;
-          tr.appendChild(scoreTd);
-          const notesTd = document.createElement("td");
-          notesTd.textContent = match.notes || "—";
-          tr.appendChild(notesTd);
-          tbody.appendChild(tr);
-        });
-      });
-    }
+    function calcLeaderboards(matches) {
+      const indiv = new Map();
+      const teams = new Map();
+      for (const m of matches) {
+        const a = +m.teamA.score || 0, b = +m.teamB.score || 0;
+        const winner = a > b ? "A" : b > a ? "B" : "TIE";
 
-    // ===== Events =====
-    document.addEventListener("DOMContentLoaded", () => {
-      const dateInput = document.getElementById("date");
-      const now = new Date();
-      dateInput.value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-      renderMatches();
+        const aPlayers = (m.teamA.players || []).map(p => p.trim()).filter(Boolean);
+        const bPlayers = (m.teamB.players || []).map(p => p.trim()).filter(Boolean);
+        const aTeam = m.teamA.name || "Team A";
+        const bTeam = m.teamB.name || "Team B";
 
-      document.getElementById("saveMatchBtn").addEventListener("click", async () => {
-        const enteredPin = prompt("Enter PIN to save match:");
-        if (enteredPin !== requiredPin) {
-          alert("Incorrect PIN — match not saved.");
-          return;
-        }
-
-        const teamAName = document.getElementById("teamAName").value.trim() || "Team A";
-        const teamBName = document.getElementById("teamBName").value.trim() || "Team B";
-        const teamAPlayers = document.getElementById("teamAPlayers").value.trim();
-        const teamBPlayers = document.getElementById("teamBPlayers").value.trim();
-        const teamAScore = parseInt(document.getElementById("teamAScore").value || "0", 10);
-        const teamBScore = parseInt(document.getElementById("teamBScore").value || "0", 10);
-        const notes = document.getElementById("location").value.trim();
-        const dateTime = document.getElementById("date").value || new Date().toISOString();
-
-        const match = {
-          id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
-          dateTime,
-          teamA: {
-            name: teamAName,
-            players: teamAPlayers ? teamAPlayers.split(",").map(p => p.trim()).filter(Boolean) : [],
-            score: teamAScore
-          },
-          teamB: {
-            name: teamBName,
-            players: teamBPlayers ? teamBPlayers.split(",").map(p => p.trim()).filter(Boolean) : [],
-            score: teamBScore
-          },
-          notes
+        const indivEnsure = name => {
+          const key = name.toLowerCase();
+          if (!indiv.has(key)) indiv.set(key, { name, wins:0, losses:0, games:0 });
+          return indiv.get(key);
+        };
+        const teamEnsure = name => {
+          const key = name.toLowerCase();
+          if (!teams.has(key)) teams.set(key, { name, wins:0, losses:0, games:0 });
+          return teams.get(key);
         };
 
-        const matches = await loadMatches();
+        for (const p of aPlayers) indivEnsure(p).games++;
+        for (const p of bPlayers) indivEnsure(p).games++;
+        teamEnsure(aTeam).games++;
+        teamEnsure(bTeam).games++;
+
+        if (winner === "A") {
+          for (const p of aPlayers) indivEnsure(p).wins++;
+          for (const p of bPlayers) indivEnsure(p).losses++;
+          teamEnsure(aTeam).wins++; teamEnsure(bTeam).losses++;
+        } else if (winner === "B") {
+          for (const p of bPlayers) indivEnsure(p).wins++;
+          for (const p of aPlayers) indivEnsure(p).losses++;
+          teamEnsure(bTeam).wins++; teamEnsure(aTeam).losses++;
+        }
+      }
+
+      const toArray = map => Array.from(map.values()).map(r => ({
+        ...r,
+        winpct: r.games ? (r.wins / r.games * 100).toFixed(0) : 0
+      })).sort((a,b)=>b.wins - a.wins || b.winpct - a.winpct || a.name.localeCompare(b.name));
+
+      return { indivArr: toArray(indiv), teamArr: toArray(teams) };
+    }
+
+    async function renderMatches() {
+      const matches = await loadMatches();
+      const tbody = document.getElementById("historyBody");
+      const empty = document.getElementById("emptyState");
+      const count = document.getElementById("matchCount");
+      tbody.innerHTML = "";
+      if (!matches.length) {
+        empty.style.display = "block";
+        count.textContent = "0 matches";
+      } else {
+        empty.style.display = "none";
+        count.textContent = matches.length + (matches.length === 1 ? " match" : " matches");
+        matches.sort((a,b)=>new Date(b.dateTime)-new Date(a.dateTime)).forEach(m=>{
+          const tr=document.createElement("tr");
+          const d=new Date(m.dateTime);
+          tr.innerHTML = `
+            <td>${d.toLocaleString()}</td>
+            <td>
+              <div><strong>${m.teamA.name}</strong> <small style="color:#94a3b8">(${(m.teamA.players||[]).join(", ")||"—"})</small></div>
+              <div><strong>${m.teamB.name}</strong> <small style="color:#94a3b8">(${(m.teamB.players||[]).join(", ")||"—"})</small></div>
+            </td>
+            <td><span class="winner">${m.teamA.score > m.teamB.score ? m.teamA.name : m.teamB.score > m.teamA.score ? m.teamB.name : "Tie"}</span><br><span class="score-badge">${m.teamA.score} - ${m.teamB.score}</span></td>
+            <td>${m.notes || "—"}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+      document.getElementById("totalMatches").textContent = matches.length;
+
+      const { indivArr, teamArr } = calcLeaderboards(matches);
+      const lbI = document.getElementById("lbIndividuals");
+      const lbT = document.getElementById("lbTeams");
+      lbI.innerHTML = ""; lbT.innerHTML = "";
+      for (const r of indivArr)
+        lbI.innerHTML += `<div class="lb-row"><div>${r.name}</div><div>${r.wins}</div><div>${r.losses}</div><div>${r.games}</div><div>${r.winpct}%</div></div>`;
+      for (const r of teamArr)
+        lbT.innerHTML += `<div class="lb-row"><div>${r.name}</div><div>${r.wins}</div><div>${r.losses}</div><div>${r.games}</div><div>${r.winpct}%</div></div>`;
+    }
+
+    document.addEventListener("DOMContentLoaded", ()=>{
+      const dateInput=document.getElementById("date");
+      const now=new Date();
+      dateInput.value=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+      renderMatches();
+
+      document.getElementById("saveMatchBtn").addEventListener("click", async ()=>{
+        const enteredPin=prompt("Enter PIN to save match:");
+        if(enteredPin!==requiredPin){alert("Incorrect PIN — match not saved.");return;}
+
+        const teamAName=document.getElementById("teamAName").value.trim()||"Team A";
+        const teamBName=document.getElementById("teamBName").value.trim()||"Team B";
+        const teamAPlayers=document.getElementById("teamAPlayers").value.trim();
+        const teamBPlayers=document.getElementById("teamBPlayers").value.trim();
+        const teamAScore=parseInt(document.getElementById("teamAScore").value||"0",10);
+        const teamBScore=parseInt(document.getElementById("teamBScore").value||"0",10);
+        const notes=document.getElementById("location").value.trim();
+        const dateTime=document.getElementById("date").value||new Date().toISOString();
+
+        const match={
+          id:crypto.randomUUID?crypto.randomUUID():Date.now().toString(),
+          dateTime,
+          teamA:{name:teamAName,players:teamAPlayers?teamAPlayers.split(",").map(p=>p.trim()).filter(Boolean):[],score:teamAScore},
+          teamB:{name:teamBName,players:teamBPlayers?teamBPlayers.split(",").map(p=>p.trim()).filter(Boolean):[],score:teamBScore},
+          notes
+        };
+        const matches=await loadMatches();
         matches.push(match);
         await saveMatches(matches);
         renderMatches();
-        document.getElementById("teamAScore").value = "";
-        document.getElementById("teamBScore").value = "";
+        document.getElementById("teamAScore").value="";
+        document.getElementById("teamBScore").value="";
       });
 
-      document.getElementById("clearAllBtn").addEventListener("click", async () => {
-        if (confirm("Delete all saved matches?")) {
-          await saveMatches([]);
-          renderMatches();
-        }
+      document.getElementById("clearAllBtn").addEventListener("click", async ()=>{
+        if(confirm("Delete all saved matches?")){await saveMatches([]);renderMatches();}
       });
     });
   </script>
