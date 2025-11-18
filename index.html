@@ -121,48 +121,22 @@
     <!-- Entry Form -->
     <div class="card">
       <h2 style="margin-top:0;">New Match</h2>
-      <p style="font-size:.75rem; color:var(--muted); margin-top:-.3rem; margin-bottom:.75rem;">
-        Enter teams, players, and scores. PIN required to save.
-      </p>
+      <p style="font-size:.75rem; color:var(--muted); margin-top:-.3rem; margin-bottom:.75rem;">Enter teams, players, and scores. PIN required to save.</p>
       <div class="row">
-        <div>
-          <label for="teamAName">Team A Name</label>
-          <input id="teamAName" placeholder="e.g. Boards & Brews" />
-        </div>
-        <div>
-          <label for="teamBName">Team B Name</label>
-          <input id="teamBName" placeholder="e.g. Bag Tossers" />
-        </div>
+        <div><label for="teamAName">Team A Name</label><input id="teamAName" placeholder="e.g. Boards & Brews" /></div>
+        <div><label for="teamBName">Team B Name</label><input id="teamBName" placeholder="e.g. Bag Tossers" /></div>
       </div>
       <div class="row">
-        <div class="team-box">
-          <div class="team-title">Team A Players</div>
-          <textarea id="teamAPlayers" rows="2" placeholder="Mike, Jess"></textarea>
-        </div>
-        <div class="team-box">
-          <div class="team-title">Team B Players</div>
-          <textarea id="teamBPlayers" rows="2" placeholder="Chris, Sam"></textarea>
-        </div>
+        <div class="team-box"><div class="team-title">Team A Players</div><textarea id="teamAPlayers" rows="2" placeholder="Mike, Jess"></textarea></div>
+        <div class="team-box"><div class="team-title">Team B Players</div><textarea id="teamBPlayers" rows="2" placeholder="Chris, Sam"></textarea></div>
       </div>
       <div class="row">
-        <div>
-          <label for="teamAScore">Team A Score</label>
-          <input type="number" id="teamAScore" min="0" max="21" placeholder="21" />
-        </div>
-        <div>
-          <label for="teamBScore">Team B Score</label>
-          <input type="number" id="teamBScore" min="0" max="21" placeholder="15" />
-        </div>
+        <div><label for="teamAScore">Team A Score</label><input type="number" id="teamAScore" min="0" max="21" placeholder="21" /></div>
+        <div><label for="teamBScore">Team B Score</label><input type="number" id="teamBScore" min="0" max="21" placeholder="15" /></div>
       </div>
       <div class="row">
-        <div>
-          <label for="location">Location / Notes</label>
-          <input id="location" placeholder="Backyard, League Night..." />
-        </div>
-        <div>
-          <label for="date">Date/Time</label>
-          <input id="date" type="datetime-local" />
-        </div>
+        <div><label for="location">Location / Notes</label><input id="location" placeholder="Backyard, League Night..." /></div>
+        <div><label for="date">Date/Time</label><input id="date" type="datetime-local" /></div>
       </div>
       <button id="saveMatchBtn">Save Match</button>
       <button id="clearAllBtn" class="danger" style="float:right;">Clear All</button>
@@ -170,38 +144,22 @@
 
     <!-- History & Leaderboards -->
     <div class="card">
-      <div class="topbar">
-        <h2 style="margin:0;">Match History</h2>
-        <small id="matchCount" style="color:var(--muted);"></small>
-      </div>
+      <div class="topbar"><h2 style="margin:0;">Match History</h2><small id="matchCount" style="color:var(--muted);"></small></div>
       <table>
         <thead>
-          <tr>
-            <th>Date</th>
-            <th>Teams / Players</th>
-            <th>Score</th>
-            <th>Notes</th>
-            <th>Actions</th>
-          </tr>
+          <tr><th>Date</th><th>Teams / Players</th><th>Score</th><th>Notes</th><th>Actions</th></tr>
         </thead>
         <tbody id="historyBody"></tbody>
       </table>
       <div id="emptyState" class="empty" style="display:none;">No matches yet — add your first one!</div>
-
-      <div class="summary-bar">
-        <div class="pill"><span class="val" id="totalMatches">0</span> <span class="muted">Total Matches Played</span></div>
-      </div>
+      <div class="summary-bar"><div class="pill"><span class="val" id="totalMatches">0</span> <span class="muted">Total Matches Played</span></div></div>
 
       <h2 style="margin:10px 0 0">Individual Leaderboard</h2>
-      <div class="lb lb-head lb-row">
-        <div>Player</div><div>Wins</div><div>Losses</div><div>Games</div><div>Win %</div>
-      </div>
+      <div class="lb lb-head lb-row"><div>Player</div><div>Wins</div><div>Losses</div><div>Games</div><div>Win %</div></div>
       <div id="lbIndividuals"></div>
 
       <h2 style="margin:14px 0 0">Team Leaderboard</h2>
-      <div class="lb lb-head lb-row">
-        <div>Team</div><div>Wins</div><div>Losses</div><div>Games</div><div>Win %</div>
-      </div>
+      <div class="lb lb-head lb-row"><div>Team</div><div>Wins</div><div>Losses</div><div>Games</div><div>Win %</div></div>
       <div id="lbTeams"></div>
     </div>
   </div>
@@ -212,53 +170,45 @@
     let editingId = null;
 
     async function loadMatches() {
-      try {
-        const res = await fetch(API);
-        return await res.json();
-      } catch { return []; }
+      try { const r = await fetch(API); return await r.json(); }
+      catch { return []; }
     }
 
     async function saveMatches(matches) {
-      await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ matches })
-      });
+      await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ matches }) });
     }
 
     function calcLeaderboards(matches) {
-      const indiv = new Map();
-      const teams = new Map();
-      for (const m of matches) {
-        const a = +m.teamA.score || 0, b = +m.teamB.score || 0;
-        const winner = a > b ? "A" : b > a ? "B" : "TIE";
-        const aPlayers = (m.teamA.players||[]).map(p=>p.trim()).filter(Boolean);
-        const bPlayers = (m.teamB.players||[]).map(p=>p.trim()).filter(Boolean);
-        const aTeam = m.teamA.name||"Team A", bTeam = m.teamB.name||"Team B";
-        const ensure = (map,name)=>{const k=name.toLowerCase();if(!map.has(k))map.set(k,{name,wins:0,losses:0,games:0});return map.get(k);};
-        for(const p of aPlayers)ensure(indiv,p).games++; for(const p of bPlayers)ensure(indiv,p).games++;
-        ensure(teams,aTeam).games++; ensure(teams,bTeam).games++;
-        if(winner==="A"){for(const p of aPlayers)ensure(indiv,p).wins++;for(const p of bPlayers)ensure(indiv,p).losses++;ensure(teams,aTeam).wins++;ensure(teams,bTeam).losses++;}
-        else if(winner==="B"){for(const p of bPlayers)ensure(indiv,p).wins++;for(const p of aPlayers)ensure(indiv,p).losses++;ensure(teams,bTeam).wins++;ensure(teams,aTeam).losses++;}
+      const indiv=new Map(),teams=new Map();
+      for(const m of matches){
+        const a=+m.teamA.score||0,b=+m.teamB.score||0;
+        const win=a>b?"A":b>a?"B":"TIE";
+        const aP=(m.teamA.players||[]).map(p=>p.trim()).filter(Boolean);
+        const bP=(m.teamB.players||[]).map(p=>p.trim()).filter(Boolean);
+        const aT=m.teamA.name||"Team A",bT=m.teamB.name||"Team B";
+        const e=(map,n)=>{const k=n.toLowerCase();if(!map.has(k))map.set(k,{name:n,wins:0,losses:0,games:0});return map.get(k);};
+        for(const p of aP)e(indiv,p).games++;for(const p of bP)e(indiv,p).games++;
+        e(teams,aT).games++;e(teams,bT).games++;
+        if(win==="A"){for(const p of aP)e(indiv,p).wins++;for(const p of bP)e(indiv,p).losses++;e(teams,aT).wins++;e(teams,bT).losses++;}
+        else if(win==="B"){for(const p of bP)e(indiv,p).wins++;for(const p of aP)e(indiv,p).losses++;e(teams,bT).wins++;e(teams,aT).losses++;}
       }
-      const sortFn=(a,b)=>b.wins-a.wins||b.winpct-a.winpct||a.name.localeCompare(b.name);
-      const toArr=map=>Array.from(map.values()).map(x=>({...x,winpct:x.games?((x.wins/x.games)*100).toFixed(0):0})).sort(sortFn);
-      return {indivArr:toArr(indiv),teamArr:toArr(teams)};
+      const arr=m=>Array.from(m.values()).map(x=>({...x,winpct:x.games?((x.wins/x.games)*100).toFixed(0):0})).sort((a,b)=>b.wins-a.wins||b.winpct-a.winpct||a.name.localeCompare(b.name));
+      return{indivArr:arr(indiv),teamArr:arr(teams)};
     }
 
-    async function renderMatches() {
-      const matches = await loadMatches();
-      const tbody = document.getElementById("historyBody");
-      tbody.innerHTML = "";
+    async function renderMatches(){
+      const matches=await loadMatches();
+      const tbody=document.getElementById("historyBody");
+      tbody.innerHTML="";
       if(!matches.length){document.getElementById("emptyState").style.display="block";return;}
       document.getElementById("emptyState").style.display="none";
-      document.getElementById("totalMatches").textContent = matches.length;
-      document.getElementById("matchCount").textContent = matches.length+" matches";
+      document.getElementById("totalMatches").textContent=matches.length;
+      document.getElementById("matchCount").textContent=matches.length+" match"+(matches.length>1?"es":"");
 
       matches.sort((a,b)=>new Date(b.dateTime)-new Date(a.dateTime));
       for(const m of matches){
-        const tr=document.createElement("tr");
         const d=new Date(m.dateTime);
+        const tr=document.createElement("tr");
         tr.innerHTML=`
           <td>${d.toLocaleString()}</td>
           <td>
@@ -274,11 +224,11 @@
         tbody.appendChild(tr);
       }
 
-      const { indivArr, teamArr } = calcLeaderboards(matches);
-      const lbI=document.getElementById("lbIndividuals"), lbT=document.getElementById("lbTeams");
-      lbI.innerHTML=""; lbT.innerHTML="";
-      for(const r of indivArr) lbI.innerHTML += `<div class="lb-row"><div>${r.name}</div><div>${r.wins}</div><div>${r.losses}</div><div>${r.games}</div><div>${r.winpct}%</div></div>`;
-      for(const r of teamArr) lbT.innerHTML += `<div class="lb-row"><div>${r.name}</div><div>${r.wins}</div><div>${r.losses}</div><div>${r.games}</div><div>${r.winpct}%</div></div>`;
+      const {indivArr,teamArr}=calcLeaderboards(matches);
+      const lbI=document.getElementById("lbIndividuals"),lbT=document.getElementById("lbTeams");
+      lbI.innerHTML="";lbT.innerHTML="";
+      for(const r of indivArr)lbI.innerHTML+=`<div class="lb-row"><div>${r.name}</div><div>${r.wins}</div><div>${r.losses}</div><div>${r.games}</div><div>${r.winpct}%</div></div>`;
+      for(const r of teamArr)lbT.innerHTML+=`<div class="lb-row"><div>${r.name}</div><div>${r.wins}</div><div>${r.losses}</div><div>${r.games}</div><div>${r.winpct}%</div></div>`;
     }
 
     async function editMatch(id){
@@ -327,63 +277,36 @@
         const matches=await loadMatches();
         if(editingId){
           const idx=matches.findIndex(x=>x.id===editingId);
-                  if(idx >= 0) {
-            matches[idx] = {
-              ...matches[idx],
-              dateTime,
-              teamA: {
-                name: teamAName,
-                players: teamAPlayers ? teamAPlayers.split(",").map(p => p.trim()).filter(Boolean) : [],
-                score: teamAScore
-              },
-              teamB: {
-                name: teamBName,
-                players: teamBPlayers ? teamBPlayers.split(",").map(p => p.trim()).filter(Boolean) : [],
-                score: teamBScore
-              },
-              notes
-            };
+          if(idx>=0){
+            matches[idx]={...matches[idx],dateTime,teamA:{name:teamAName,players:teamAPlayers?teamAPlayers.split(",").map(p=>p.trim()).filter(Boolean):[],score:teamAScore},teamB:{name:teamBName,players:teamBPlayers?teamBPlayers.split(",").map(p=>p.trim()).filter(Boolean):[],score:teamBScore},notes};
           }
-          editingId = null;
-          document.getElementById("saveMatchBtn").textContent = "Save Match";
+          editingId=null;
+          document.getElementById("saveMatchBtn").textContent="Save Match";
         } else {
           matches.push({
-            id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+            id:crypto.randomUUID?crypto.randomUUID():Date.now().toString(),
             dateTime,
-            teamA: {
-              name: teamAName,
-              players: teamAPlayers ? teamAPlayers.split(",").map(p => p.trim()).filter(Boolean) : [],
-              score: teamAScore
-            },
-            teamB: {
-              name: teamBName,
-              players: teamBPlayers ? teamBPlayers.split(",").map(p => p.trim()).filter(Boolean) : [],
-              score: teamBScore
-            },
+            teamA:{name:teamAName,players:teamAPlayers?teamAPlayers.split(",").map(p=>p.trim()).filter(Boolean):[],score:teamAScore},
+            teamB:{name:teamBName,players:teamBPlayers?teamBPlayers.split(",").map(p=>p.trim()).filter(Boolean):[],score:teamBScore},
             notes
           });
         }
 
         await saveMatches(matches);
         renderMatches();
-
-        // Clear form fields for next entry
-        document.getElementById("teamAScore").value = "";
-        document.getElementById("teamBScore").value = "";
-        document.getElementById("teamAPlayers").value = "";
-        document.getElementById("teamBPlayers").value = "";
-        document.getElementById("teamAName").value = "";
-        document.getElementById("teamBName").value = "";
-        document.getElementById("location").value = "";
+        document.getElementById("teamAName").value="";
+        document.getElementById("teamBName").value="";
+        document.getElementById("teamAPlayers").value="";
+        document.getElementById("teamBPlayers").value="";
+        document.getElementById("teamAScore").value="";
+        document.getElementById("teamBScore").value="";
+        document.getElementById("location").value="";
       });
 
-      document.getElementById("clearAllBtn").addEventListener("click", async () => {
-        const pin = prompt("Enter PIN to clear all matches:");
-        if(pin !== requiredPin) { alert("Incorrect PIN — matches not cleared."); return; }
-        if(confirm("Are you sure you want to delete ALL matches?")) {
-          await saveMatches([]);
-          renderMatches();
-        }
+      document.getElementById("clearAllBtn").addEventListener("click",async()=>{
+        const pin=prompt("Enter PIN to clear all matches:");
+        if(pin!==requiredPin){alert("Incorrect PIN — matches not cleared.");return;}
+        if(confirm("Are you sure you want to delete ALL matches?")){await saveMatches([]);renderMatches();}
       });
     });
   </script>
